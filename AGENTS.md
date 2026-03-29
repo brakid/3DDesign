@@ -117,11 +117,6 @@ cd backend && cp .env.example .env
 # Terminal 2: bun run dev (frontend)
 ```
 
-**Important**: On macOS, you may need to increase file descriptor limit:
-```bash
-ulimit -n 65536
-```
-
 ## Testing
 
 Currently no test suite. When adding tests:

@@ -51,7 +51,6 @@ cp .env.example .env
 ```bash
 # Terminal 1: Start backend
 cd backend
-ulimit -n 65536  # macOS file descriptor limit
 bun run dev
 
 # Terminal 2: Start frontend
