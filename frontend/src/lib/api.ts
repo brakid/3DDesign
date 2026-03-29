@@ -72,11 +72,21 @@ export async function verifyToken(): Promise<boolean> {
 
   try {
     const response = await fetch(`${API_BASE}/auth/verify`, {
-      headers: { 'Authorization': `Bearer ${token}` },
+      method: 'POST',
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
     });
+    
+    if (!response.ok) {
+      return false;
+    }
+    
     const result = await response.json();
-    return result.valid;
-  } catch {
+    return result.valid === true;
+  } catch (err) {
+    console.error('Token verification failed:', err);
     return false;
   }
 }

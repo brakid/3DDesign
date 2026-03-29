@@ -23,7 +23,11 @@ export function Admin() {
   const previewRef = useRef<UploadPreviewHandle>(null);
 
   useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    console.log('Admin: Checking token:', token ? 'Token exists' : 'No token');
+    
     verifyToken().then(valid => {
+      console.log('Admin: Token verification result:', valid);
       setIsAuthenticated(valid);
       setCheckingAuth(false);
       if (valid) {
@@ -42,10 +46,14 @@ export function Admin() {
 
     try {
       const result = await login(password);
-      localStorage.setItem('adminToken', result.token);
-      setIsAuthenticated(true);
-      setPassword('');
-      loadDesigns();
+      if (result.token) {
+        localStorage.setItem('adminToken', result.token);
+        setIsAuthenticated(true);
+        setPassword('');
+        loadDesigns();
+      } else {
+        setLoginError('Login failed');
+      }
     } catch {
       setLoginError('Invalid password');
     }

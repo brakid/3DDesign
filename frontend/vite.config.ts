@@ -16,6 +16,13 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            if (proxyReq.getHeader('authorization')) {
+              proxyReq.setHeader('authorization', proxyReq.getHeader('authorization'));
+            }
+          });
+        },
       },
       '/uploads': {
         target: 'http://localhost:3000',
