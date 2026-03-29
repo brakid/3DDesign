@@ -9,24 +9,24 @@ A web application for showcasing and viewing 3D printing models directly in the 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                          Frontend (React + Vite)                    │
-│   Gallery │ DesignViewer │ Admin │ ModelViewer (Three.js)           │
-│                         │                                                │
+│   Gallery │ DesignViewer │ Admin │ ModelViewer (Three.js)         │
+│                         │                                              │
 │                  Client-side thumbnail generation                     │
 └────────────────────────────┬────────────────────────────────────────┘
                              │ HTTP/JSON
 ┌────────────────────────────▼────────────────────────────────────────┐
 │                         Backend (Bun/Express)                       │
-│   Designs API │ Auth API │ Admin API (model + thumbnail upload)      │
+│   Designs API │ Auth API │ Admin API │ Request Logging             │
 └────────────────────────────┬────────────────────────────────────────┘
                              │
-           ┌──────────────────┼──────────────────┐
-           │                  │                  │
-      ┌────▼────┐       ┌─────▼─────┐     ┌────▼────┐
-      │ SQLite  │       │  /uploads │
-      │  (.db)  │       │  /models  │
-      └─────────┘       │ /thumbnails│
-                        │  /covers  │
-                        └───────────┘
+            ┌──────────────────┼──────────────────┐
+            │                  │                  │
+       ┌────▼────┐       ┌─────▼─────┐     ┌────▼────┐
+       │ SQLite   │       │  /uploads │
+       │  (.db)   │       │  /models  │
+       └──────────┘       │ /thumbnails│
+                         │  /covers  │
+                         └───────────┘
 ```
 
 ## Tech Stack
@@ -54,15 +54,15 @@ A web application for showcasing and viewing 3D printing models directly in the 
 ├── backend/                # Bun/Express API server
 │   ├── src/
 │   │   ├── db/             # SQLite database layer
-│   │   ├── routes/          # Express route handlers
+│   │   ├── routes/         # Express route handlers
 │   │   ├── middleware/      # Auth middleware
 │   │   ├── utils/          # Filename parser
-│   │   └── index.ts        # Server entry point
-│   ├── uploads/            # File storage (gitignored)
+│   │   └── index.ts        # Server entry point + logging
+│   ├── uploads/             # File storage (gitignored)
 │   │   ├── models/         # OBJ, GLTF, GLB files
-│   │   ├── thumbnails/     # Generated PNG previews
+│   │   ├── thumbnails/      # Generated PNG previews
 │   │   └── covers/         # Admin-uploaded cover images
-│   ├── data/               # SQLite database file
+│   ├── data/                # SQLite database file
 │   └── package.json
 │
 ├── frontend/               # React SPA
@@ -70,16 +70,16 @@ A web application for showcasing and viewing 3D printing models directly in the 
 │   │   ├── components/     # Reusable UI components
 │   │   │   ├── ModelViewer.tsx      # 3D viewer with controls
 │   │   │   ├── UploadPreview.tsx    # Upload with preview
-│   │   │   ├── DesignCard.tsx      # Gallery card
+│   │   │   ├── DesignCard.tsx       # Gallery card
 │   │   │   ├── TagFilter.tsx        # Tag filtering
-│   │   │   └── SearchBar.tsx       # Search input
+│   │   │   └── SearchBar.tsx        # Search input
 │   │   ├── pages/
-│   │   │   ├── Gallery.tsx         # Design gallery
-│   │   │   ├── DesignViewer.tsx    # Single design view
-│   │   │   └── Admin.tsx          # Admin panel
+│   │   │   ├── Gallery.tsx          # Design gallery
+│   │   │   ├── DesignViewer.tsx     # Single design view
+│   │   │   └── Admin.tsx           # Admin panel
 │   │   ├── lib/
-│   │   │   └── api.ts             # API client
-│   │   └── types.ts              # Local type definitions
+│   │   │   └── api.ts              # API client
+│   │   └── types.ts                # Local type definitions
 │   └── package.json
 │
 ├── DESIGN.md              # This file - architecture docs
@@ -183,6 +183,20 @@ CREATE INDEX idx_category ON designs(category);
 - The resulting PNG blob is uploaded alongside the model file
 - **Why client-side**: Bun doesn't support native WebGL/Three.js server-side
 
+### Backend Logging
+All HTTP requests are logged with:
+- **Method** (GET, POST, DELETE)
+- **Path** (e.g., `/api/designs`, `/api/auth/verify`)
+- **Status code** (colored: green=success, yellow=redirect, red=error)
+- **Duration** in milliseconds
+
+Example output:
+```
+200 GET /api/designs 45ms
+401 POST /api/auth/verify 12ms
+201 POST /api/admin/designs 234ms
+```
+
 ## Security Considerations
 
 1. **Admin Auth**: Single password stored in environment variable
@@ -215,7 +229,7 @@ cd backend && cp .env.example .env
 
 # Run development servers
 # Terminal 1:
-cd backend && ulimit -n 65536 && bun run dev
+cd backend && bun run dev
 
 # Terminal 2:
 cd frontend && bun run dev

@@ -16,6 +16,7 @@ This project was built through a collaborative design session with the user. The
 | Tech stack | React + Node.js / Next.js / Vanilla + Python | **React + Bun (Node.js TypeScript)** |
 | Metadata storage | SQLite / JSON file / PostgreSQL/MySQL | **SQLite (Recommended)** |
 | Styling framework | (not explicitly asked, chosen for UX) | **Tailwind CSS** |
+| Thumbnail generation | Server-side (Puppeteer) / Client-side (browser) | **Client-side (browser)** |
 
 ### Design Rationale
 
@@ -34,6 +35,7 @@ This project was built through a collaborative design session with the user. The
 2. **Type safety**: Full TypeScript everywhere, no `any` types (except where unavoidable)
 3. **Performance**: Lazy-load 3D viewer; thumbnails for fast gallery browsing
 4. **Client-side rendering**: Thumbnails and 3D preview generated in browser
+5. **Observable**: Backend logs all requests with status codes for debugging
 
 ## Key Conventions
 
@@ -51,6 +53,27 @@ This project was built through a collaborative design session with the user. The
 - Props interfaces: PascalCase with `Props` suffix
 
 ### 3D Viewer Implementation
+
+#### Components
+- **ModelViewer**: Full-featured 3D viewer used in DesignViewer page
+- **UploadPreview**: 3D preview used in Admin panel with snapshot capture
+
+#### Controls
+Both ModelViewer and UploadPreview share the same control scheme:
+
+| Control | Action |
+|---------|--------|
+| Mouse drag | Rotate camera around model |
+| Scroll wheel | Zoom in/out |
+| Right-click drag | Pan view |
+| Zoom In button | Move camera closer |
+| Zoom Out button | Move camera further |
+| Fit to View | Auto-frame entire model |
+| Reset View | Return to default position |
+| Auto-Rotate | Toggle spinning camera |
+| X / Y / Z buttons | Rotate model 90° around world axes |
+
+#### Technical Details
 - Uses raw Three.js (not React Three Fiber) for imperative control
 - OrbitControls from `three/examples/jsm/controls/OrbitControls.js`
 - OBJLoader and GLTFLoader for model loading
@@ -67,6 +90,13 @@ This project was built through a collaborative design session with the user. The
 - Primary color palette (blue: `primary-500: #0ea5e9`)
 - Rounded corners (rounded-lg, rounded-xl), subtle shadows for cards
 - Lucide React for icons
+
+### Backend Logging
+All HTTP requests are logged with:
+- Method (GET, POST, DELETE)
+- Path
+- Status code (colored: green=success, yellow=redirect, red=error)
+- Duration in milliseconds
 
 ## Making Changes
 
