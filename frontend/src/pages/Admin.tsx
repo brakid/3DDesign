@@ -158,7 +158,7 @@ export function Admin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter admin password"
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 bg-white"
               autoFocus
             />
             
@@ -274,7 +274,7 @@ export function Admin() {
                     value={uploadForm.name}
                     onChange={(e) => setUploadForm({ ...uploadForm, name: e.target.value })}
                     placeholder="Design name"
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 bg-white"
                   />
 
                   <input
@@ -282,7 +282,7 @@ export function Admin() {
                     value={uploadForm.category}
                     onChange={(e) => setUploadForm({ ...uploadForm, category: e.target.value })}
                     placeholder="Category (optional)"
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 bg-white"
                   />
 
                   <input
@@ -290,7 +290,7 @@ export function Admin() {
                     value={uploadForm.tags}
                     onChange={(e) => setUploadForm({ ...uploadForm, tags: e.target.value })}
                     placeholder="Tags (comma separated)"
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 bg-white"
                   />
                 </div>
               </div>
@@ -300,7 +300,7 @@ export function Admin() {
                 onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
                 placeholder="Description (optional)"
                 rows={2}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none text-gray-900 bg-white"
               />
 
               <button

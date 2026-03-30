@@ -15,6 +15,18 @@ export interface ModelViewerHandle {
   captureSnapshot: () => Blob | null;
 }
 
+const PRESET_COLORS = [
+  '#cccccc', // Light gray (default)
+  '#ffffff', // White
+  '#e74c3c', // Red
+  '#27ae60', // Green
+  '#3498db', // Blue
+  '#f1c40f', // Yellow
+  '#e67e22', // Orange
+  '#9b59b6', // Purple
+  '#1a1a1a', // Dark
+];
+
 export const ModelViewer = forwardRef<ModelViewerHandle, ModelViewerProps>(
   function ModelViewer({ modelUrl, filename, onLoad }, ref) {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -24,9 +36,11 @@ export const ModelViewer = forwardRef<ModelViewerHandle, ModelViewerProps>(
     const controlsRef = useRef<OrbitControls | null>(null);
     const modelRef = useRef<THREE.Object3D | null>(null);
     const animationRef = useRef<number | null>(null);
+    const originalColorsRef = useRef<Map<THREE.Mesh, string>>(new Map());
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [autoRotate, setAutoRotate] = useState(false);
+    const [modelColor, setModelColor] = useState(PRESET_COLORS[0]);
 
     const defaultCameraPosition = new THREE.Vector3(3, 2, 3);
 
@@ -52,6 +66,25 @@ export const ModelViewer = forwardRef<ModelViewerHandle, ModelViewerProps>(
         return new Blob([bytes], { type: 'image/png' });
       }
     }));
+
+    const applyColor = useCallback((color: string) => {
+      if (!modelRef.current) return;
+      modelRef.current.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach(mat => {
+              if (mat.color) {
+                mat.color.set(color);
+                mat.needsUpdate = true;
+              }
+            });
+          } else if (child.material?.color) {
+            child.material.color.set(color);
+            child.material.needsUpdate = true;
+          }
+        }
+      });
+    }, []);
 
     const resetView = useCallback(() => {
       if (!cameraRef.current || !controlsRef.current) return;
@@ -105,6 +138,19 @@ export const ModelViewer = forwardRef<ModelViewerHandle, ModelViewerProps>(
       modelRef.current.rotateOnWorldAxis(rotationAxis, Math.PI / 2);
     }, []);
 
+    const resetColor = useCallback(() => {
+      originalColorsRef.current.forEach((originalColor, mesh) => {
+        if ((mesh.material as THREE.MeshStandardMaterial)?.color) {
+          (mesh.material as THREE.MeshStandardMaterial).color.set(originalColor);
+        }
+      });
+      setModelColor(PRESET_COLORS[0]);
+    }, []);
+
+    useEffect(() => {
+      applyColor(modelColor);
+    }, [modelColor, applyColor]);
+
     useEffect(() => {
       if (!controlsRef.current) return;
       controlsRef.current.autoRotate = autoRotate;
@@ -116,6 +162,7 @@ export const ModelViewer = forwardRef<ModelViewerHandle, ModelViewerProps>(
 
       setLoading(true);
       setError(null);
+      originalColorsRef.current.clear();
 
       const container = containerRef.current;
       const width = container.clientWidth;
@@ -167,6 +214,20 @@ export const ModelViewer = forwardRef<ModelViewerHandle, ModelViewerProps>(
         if (modelRef.current) {
           scene.remove(modelRef.current);
         }
+
+        loaded.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            if (Array.isArray(child.material)) {
+              child.material.forEach(mat => {
+                if ((mat as THREE.MeshStandardMaterial).color) {
+                  originalColorsRef.current.set(child, (mat as THREE.MeshStandardMaterial).color.getHexString());
+                }
+              });
+            } else if ((child.material as THREE.MeshStandardMaterial)?.color) {
+              originalColorsRef.current.set(child, (child.material as THREE.MeshStandardMaterial).color.getHexString());
+            }
+          }
+        });
 
         modelRef.current = loaded;
 
@@ -261,52 +322,52 @@ export const ModelViewer = forwardRef<ModelViewerHandle, ModelViewerProps>(
       <div className="relative w-full h-full bg-gray-100 rounded-lg overflow-hidden">
         <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
         
-        <div className="absolute top-2 right-2 flex flex-col gap-1">
+        <div className="absolute top-2 right-2 flex flex-col gap-1 sm:gap-2">
           <button
             type="button"
             onClick={zoomIn}
-            className="p-2 bg-white/90 hover:bg-white rounded-lg shadow-md transition-colors"
+            className="p-1.5 sm:p-2 bg-white/90 hover:bg-white rounded-lg shadow-md transition-colors"
             title="Zoom In"
           >
-            <ZoomIn size={18} className="text-gray-700" />
+            <ZoomIn size={16} className="sm:text-[18px] text-gray-700" />
           </button>
           <button
             type="button"
             onClick={zoomOut}
-            className="p-2 bg-white/90 hover:bg-white rounded-lg shadow-md transition-colors"
+            className="p-1.5 sm:p-2 bg-white/90 hover:bg-white rounded-lg shadow-md transition-colors"
             title="Zoom Out"
           >
-            <ZoomOut size={18} className="text-gray-700" />
+            <ZoomOut size={16} className="sm:text-[18px] text-gray-700" />
           </button>
           <button
             type="button"
             onClick={fitToView}
-            className="p-2 bg-white/90 hover:bg-white rounded-lg shadow-md transition-colors"
+            className="p-1.5 sm:p-2 bg-white/90 hover:bg-white rounded-lg shadow-md transition-colors"
             title="Fit to View"
           >
-            <Maximize2 size={18} className="text-gray-700" />
+            <Maximize2 size={16} className="sm:text-[18px] text-gray-700" />
           </button>
           <button
             type="button"
             onClick={resetView}
-            className="p-2 bg-white/90 hover:bg-white rounded-lg shadow-md transition-colors"
+            className="p-1.5 sm:p-2 bg-white/90 hover:bg-white rounded-lg shadow-md transition-colors"
             title="Reset View"
           >
-            <RefreshCw size={18} className="text-gray-700" />
+            <RefreshCw size={16} className="sm:text-[18px] text-gray-700" />
           </button>
           <button
             type="button"
             onClick={() => setAutoRotate(!autoRotate)}
-            className={`p-2 rounded-lg shadow-md transition-colors ${
+            className={`p-1.5 sm:p-2 rounded-lg shadow-md transition-colors ${
               autoRotate ? 'bg-primary-600 hover:bg-primary-700' : 'bg-white/90 hover:bg-white'
             }`}
             title="Toggle Auto-Rotate"
           >
-            <RotateCw size={18} className={autoRotate ? 'text-white' : 'text-gray-700'} />
+            <RotateCw size={16} className={`sm:text-[18px] ${autoRotate ? 'text-white' : 'text-gray-700'}`} />
           </button>
         </div>
 
-        <div className="absolute bottom-2 left-2 flex gap-1">
+        <div className="absolute bottom-2 left-2 hidden sm:flex gap-1">
           <button
             type="button"
             onClick={() => rotateModel('x')}
@@ -330,6 +391,39 @@ export const ModelViewer = forwardRef<ModelViewerHandle, ModelViewerProps>(
             title="Rotate 90° on Z axis"
           >
             Z
+          </button>
+        </div>
+
+        <div className="absolute bottom-2 right-2 flex gap-1 sm:gap-2 items-center">
+          <div className="flex gap-0.5 sm:gap-1 bg-white/90 rounded-lg p-0.5 sm:p-1 shadow-md">
+            {PRESET_COLORS.map((color) => (
+              <button
+                key={color}
+                type="button"
+                onClick={() => setModelColor(color)}
+                className={`w-4 h-4 sm:w-5 sm:h-5 rounded transition-transform hover:scale-110 ${
+                  modelColor === color ? 'ring-2 ring-primary-500 ring-offset-1' : ''
+                }`}
+                style={{ backgroundColor: color, border: color === '#ffffff' ? '1px solid #ccc' : 'none' }}
+                title={color}
+              />
+            ))}
+          </div>
+          <input
+            type="color"
+            value={modelColor}
+            onChange={(e) => setModelColor(e.target.value)}
+            className="w-6 h-6 sm:w-8 sm:h-8 rounded cursor-pointer bg-white shadow-md border border-gray-200"
+            style={{ color: '#374151' }}
+            title="Custom color"
+          />
+          <button
+            type="button"
+            onClick={resetColor}
+            className="p-1 sm:p-1.5 bg-white/90 hover:bg-white rounded-lg shadow-md transition-colors text-gray-600"
+            title="Reset to original color"
+          >
+            <RefreshCw size={14} className="sm:text-[16px]" />
           </button>
         </div>
 

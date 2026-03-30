@@ -72,6 +72,13 @@ Both ModelViewer and UploadPreview share the same control scheme:
 | Reset View | Return to default position |
 | Auto-Rotate | Toggle spinning camera |
 | X / Y / Z buttons | Rotate model 90° around world axes |
+| Color palette | Preset colors + custom picker, resets to original |
+
+#### Responsive Design
+- Controls scale down on mobile (smaller buttons, tighter spacing)
+- Color palette on left, rotation buttons on right (UploadPreview)
+- X/Y/Z buttons hidden on mobile in ModelViewer
+- All form inputs require explicit `text-gray-900 bg-white` for text color
 
 #### Technical Details
 - Uses raw Three.js (not React Three Fiber) for imperative control

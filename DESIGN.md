@@ -161,6 +161,16 @@ CREATE INDEX idx_category ON designs(category);
   - X: Rotate around world X-axis
   - Y: Rotate around world Y-axis (vertical)
   - Z: Rotate around world Z-axis
+- **Color palette**: Preset colors + custom color picker
+  - Applies color to all meshes in the model
+  - Reset button restores original materials
+  - Works in both ModelViewer and UploadPreview components
+
+### Responsive Design
+- 3D viewer controls scale down on mobile (smaller buttons/icons)
+- Color palette visible on left, rotation buttons on right
+- X/Y/Z rotation buttons hidden on smaller screens in DesignViewer
+- All form inputs use explicit `text-gray-900 bg-white` to override inherited styles
 
 ### Admin Panel (`/admin`)
 - Password-based authentication (JWT, 24hr expiry)
