@@ -2,6 +2,8 @@
 
 A web application for showcasing and viewing 3D printing models directly in the browser. Features interactive 3D model viewing using Three.js, tag-based filtering, and an admin upload system.
 
+![](./gallery.png)
+
 ## Features
 
 ### For Visitors
@@ -9,6 +11,8 @@ A web application for showcasing and viewing 3D printing models directly in the 
 - **Search & Filter**: Search by name, description, or tags; filter by multiple tags
 - **3D Model Viewer**: Rotate, zoom, and pan around 3D models directly in the browser
 - **Download**: Download original OBJ/GLTF/GLB files
+
+![](./designviewer.png)
 
 ### For Admin
 - **Simple Authentication**: Single password protection
