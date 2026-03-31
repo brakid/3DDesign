@@ -40,8 +40,7 @@ A web application for showcasing and viewing 3D printing models directly in the 
 
 ```bash
 # Install dependencies
-cd shared && bun install
-cd ../backend && bun install
+cd backend && bun install
 cd ../frontend && bun install
 
 # Configure environment

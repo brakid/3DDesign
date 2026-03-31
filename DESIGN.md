@@ -43,12 +43,6 @@ A web application for showcasing and viewing 3D printing models directly in the 
 
 ```
 3DDesignShop/
-├── shared/                 # Shared TypeScript types and utilities
-│   ├── src/
-│   │   ├── types/          # Design, Auth types
-│   │   └── utils/          # Tag parsing, slugify helpers
-│   └── package.json
-│
 ├── backend/                # Bun/Express API server
 │   ├── src/
 │   │   ├── db/             # SQLite database layer
@@ -227,8 +221,7 @@ FRONTEND_URL=http://localhost:5173
 
 ```bash
 # Install dependencies
-cd shared && bun install
-cd ../backend && bun install
+cd backend && bun install
 cd ../frontend && bun install
 
 # Copy environment file
